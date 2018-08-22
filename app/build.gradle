@@ -64,5 +64,6 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:2.15"
     kapt "com.google.dagger:dagger-android-processor:2.15"
 
-
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.24.0'
 }

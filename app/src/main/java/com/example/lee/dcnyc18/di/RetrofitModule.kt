@@ -12,8 +12,6 @@ import javax.inject.Singleton
 
 @Module
 class RetrofitModule {
-    private val BASE_URL = "https://api.unsplash.com/"
-
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
                 .addInterceptor(HeaderInterceptor)
@@ -33,5 +31,9 @@ class RetrofitModule {
     @Provides
     internal fun providesUnsplashService(): UnsplashService {
         return retrofit.create(UnsplashService::class.java)
+    }
+
+    companion object {
+        private const val BASE_URL = "https://api.unsplash.com/"
     }
 }
