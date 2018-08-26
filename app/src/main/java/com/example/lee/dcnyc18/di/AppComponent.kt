@@ -5,8 +5,10 @@ import com.example.lee.dcnyc18.MainActivity
 import com.example.lee.dcnyc18.db.AppDatabase
 import com.example.lee.dcnyc18.db.PhotoDao
 import com.example.lee.dcnyc18.db.PhotoDataSource
+import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import com.example.lee.dcnyc18.network.UnsplashService
 import com.example.lee.dcnyc18.prefs.PrefsManager
+import com.example.lee.dcnyc18.ui.PhotoAdapter
 import com.lee.apps.vivir.di.MainActivityModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -22,7 +24,8 @@ import javax.inject.Singleton
         MainActivityModule::class,
         AndroidInjectionModule::class,
         AndroidSupportInjectionModule::class,
-        ViewModelModule::class
+        ViewModelModule::class,
+        DispatchersModule::class
 ))
 interface AppComponent {
     fun inject(mainActivity: MainActivity)
@@ -40,4 +43,6 @@ interface AppComponent {
     fun unsplashService(): UnsplashService
 
     fun prefsManager(): PrefsManager
+
+    fun dispatchers(): DCNYCDispatchers
 }

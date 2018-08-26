@@ -64,6 +64,14 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:2.15"
     kapt "com.google.dagger:dagger-android-processor:2.15"
 
-    // Coroutines
+    // Coroutines support
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.24.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-rx2:0.24.0'
+    compile 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0'
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }

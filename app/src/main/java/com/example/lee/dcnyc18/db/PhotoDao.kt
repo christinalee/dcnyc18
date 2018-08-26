@@ -13,6 +13,7 @@ interface PhotoDao {
     @get:Query("SELECT * FROM $PHOTO_TABLE")
     val all: Flowable<List<Photo>>
 
+    // Db 1: Remove Rx from return types
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(photos: List<Photo>): LongArray
 
