@@ -1,12 +1,14 @@
 package com.example.lee.dcnyc18.db
 
+import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import com.example.lee.dcnyc18.models.Photo
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 
 class PhotoDataSource(
-        private val photoDao: PhotoDao
+        private val photoDao: PhotoDao,
+        private val dispatchers: DCNYCDispatchers
 ) {
     // Streams 2: return a ReceiveChannel via openSubscription
     fun getAllPhotos(): Flowable<List<Photo>> {

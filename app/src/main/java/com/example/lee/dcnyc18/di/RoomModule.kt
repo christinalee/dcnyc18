@@ -6,11 +6,14 @@ import com.example.lee.dcnyc18.db.APPLICATION_NAME
 import com.example.lee.dcnyc18.db.AppDatabase
 import com.example.lee.dcnyc18.db.PhotoDao
 import com.example.lee.dcnyc18.db.PhotoDataSource
+import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
+@Module(
+        includes = arrayOf(DispatchersModule::class)
+)
 class RoomModule(application: Application) {
 
     private val appDatabase: AppDatabase by lazy {
@@ -34,8 +37,7 @@ class RoomModule(application: Application) {
 
     @Singleton
     @Provides
-    internal fun photoDataSource(photoDao: PhotoDao): PhotoDataSource {
-        return PhotoDataSource(photoDao)
+    internal fun photoDataSource(photoDao: PhotoDao, dispatchers: DCNYCDispatchers): PhotoDataSource {
+        return PhotoDataSource(photoDao, dispatchers)
     }
-
 }

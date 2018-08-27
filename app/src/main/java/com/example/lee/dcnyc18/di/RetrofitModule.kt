@@ -13,14 +13,18 @@ import javax.inject.Singleton
 
 @Module
 class RetrofitModule {
-    private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
+    @Singleton
+    @Provides
+    internal fun providesOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
                 .addInterceptor(HeaderInterceptor)
                 .build()
     }
 
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
+    @Singleton
+    @Provides
+    internal fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create())
@@ -32,7 +36,7 @@ class RetrofitModule {
 
     @Singleton
     @Provides
-    internal fun providesUnsplashService(): UnsplashService {
+    internal fun providesUnsplashService(retrofit: Retrofit): UnsplashService {
         return retrofit.create(UnsplashService::class.java)
     }
 

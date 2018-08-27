@@ -14,7 +14,7 @@ interface PhotoDao {
     @get:Query("SELECT * FROM $PHOTO_TABLE")
     val all: Flowable<List<Photo>>
 
-    // Db 1: Remove Rx from return types
+    // Db 1: Here are the calls we want to convert
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(photos: List<Photo>): LongArray
 
