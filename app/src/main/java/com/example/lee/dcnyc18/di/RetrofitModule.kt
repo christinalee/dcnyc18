@@ -2,6 +2,7 @@ package com.example.lee.dcnyc18.di
 
 import com.example.lee.dcnyc18.network.HeaderInterceptor
 import com.example.lee.dcnyc18.network.UnsplashService
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -23,7 +24,9 @@ class RetrofitModule {
                 .baseUrl(BASE_URL)
                 .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create())
+                // Network 1: Add CoroutineCallAdapterFactory adapter factory
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
     }
 

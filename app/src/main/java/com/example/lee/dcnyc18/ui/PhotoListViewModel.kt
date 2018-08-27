@@ -4,19 +4,25 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.example.lee.dcnyc18.db.PhotoDataSource
+import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import com.example.lee.dcnyc18.models.Photo
 import com.example.lee.dcnyc18.network.UnsplashService
 import com.example.lee.dcnyc18.prefs.PrefsManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.experimental.Job
 import javax.inject.Inject
 
 class PhotoListViewModel @Inject constructor(
         private val photoDataSource: PhotoDataSource,
         private val unsplashService: UnsplashService,
-        private val prefsManager: PrefsManager
+        private val prefsManager: PrefsManager,
+        private val dispatchers: DCNYCDispatchers
 ): ViewModel(), ListIntentHandler, PhotoCellIntentHandler {
+    // Network 6. Create a parent job for managing cancellation
+//    private val compositeJob = Job()
+
     // TODO: this is flawed logic
     private var pageToFetch = prefsManager.retrieveNextApiPage()
         set(value) {
@@ -35,11 +41,14 @@ class PhotoListViewModel @Inject constructor(
         return photos
     }
 
+    // Network 7. Include cancellation in lifecycle events, then update coroutines with context
     override fun onCleared() {
         disposables.dispose()
+//        compositeJob.cancel()
         super.onCleared()
     }
 
+    // Db 3. Update call sites
     private fun updateModelState(modelId: String, newLikeStatus: Boolean) {
         val sub = photoDataSource.persistLikeStatus(modelId, newLikeStatus).subscribe(
                 {
@@ -52,7 +61,9 @@ class PhotoListViewModel @Inject constructor(
         disposables.add(sub)
     }
 
+    // Network 4. At call site, use coroutine launcher to be able to utilize our new function
     private fun listenForDataFromDb() {
+        // Streams 3: Handle channel iteration
         val sub = photoDataSource.getAllPhotos().observeOn(AndroidSchedulers.mainThread()).subscribe(
                 { updatedPhotos ->
                     if (updatedPhotos.isEmpty()) {
@@ -69,6 +80,7 @@ class PhotoListViewModel @Inject constructor(
         disposables.add(sub)
     }
 
+    // Network 3. Handle necessary logic in suspend fun
     private fun fetchNextPageOfPhotos() {
         val subsciption = unsplashService.getCuratedPhotos(pageToFetch = pageToFetch++)
                 .subscribeOn(Schedulers.io())
@@ -90,6 +102,7 @@ class PhotoListViewModel @Inject constructor(
         disposables.add(subsciption)
     }
 
+    // Network 5. Update remaining call sites
     override fun onReachedEndOfData() {
         fetchNextPageOfPhotos()
     }

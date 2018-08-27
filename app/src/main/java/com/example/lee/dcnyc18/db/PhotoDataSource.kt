@@ -8,10 +8,12 @@ import io.reactivex.schedulers.Schedulers
 class PhotoDataSource(
         private val photoDao: PhotoDao
 ) {
+    // Streams 2: return a ReceiveChannel via openSubscription
     fun getAllPhotos(): Flowable<List<Photo>> {
         return photoDao.all.subscribeOn(Schedulers.io())
     }
 
+    // Db 2: update function signatures to use suspend and return List directly
     fun insertIfNotPresent(photos: List<Photo>): Completable {
         return Completable.fromCallable { photoDao.insertAll(photos) }.subscribeOn(Schedulers.io())
     }

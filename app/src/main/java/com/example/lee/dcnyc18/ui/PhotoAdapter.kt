@@ -22,8 +22,10 @@ class PhotoAdapter(
         disposables = CompositeDisposable()
     }
 
+    // Diff 2: launch a coroutine and post back to main thread when ready
     fun updateData(updatedPhotos: List<Photo>) {
         Single.create<DiffUtil.DiffResult> {
+            // Diff 1: move to a suspend fun
             val diffCallback = PhotoModelDiffCallback(this.data, updatedPhotos)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
             it.onSuccess(diffResult)

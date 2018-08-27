@@ -10,6 +10,7 @@ import io.reactivex.Flowable
 
 @Dao
 interface PhotoDao {
+    // Streams 1: leave this type as is
     @get:Query("SELECT * FROM $PHOTO_TABLE")
     val all: Flowable<List<Photo>>
 
