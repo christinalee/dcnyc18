@@ -5,21 +5,31 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.lee.dcnyc18.R
+import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import com.example.lee.dcnyc18.models.Photo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.Single
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 
 class PhotoAdapter(
-        private val photoCellIntentHandler: PhotoCellIntentHandler
+        private val photoCellIntentHandler: PhotoCellIntentHandler,
+        // This should be injected like the rest, but create a secondary object for now
+        private val dispatchers: DCNYCDispatchers = DCNYCDispatchers()
 ): RecyclerView.Adapter<PhotoViewHolder>() {
     private lateinit var disposables: CompositeDisposable
     private var data: List<Photo> = listOf()
 
+    private lateinit var compositeJob: Job
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         disposables = CompositeDisposable()
+        compositeJob = Job()
     }
 
     // Diff 2: launch a coroutine and post back to main thread when ready
@@ -42,6 +52,7 @@ class PhotoAdapter(
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         disposables.dispose()
+        compositeJob.cancel()
         super.onDetachedFromRecyclerView(recyclerView)
     }
 
