@@ -10,8 +10,10 @@ interface UnsplashService {
 
     // Network 2. Change return type of Retrofit call
     @GET("/photos/curated")
-    fun getCuratedPhotos(@Query("page") pageToFetch: Int = 1,
-                         @Query("per_page") photosPerPage: Int = 10,
-                         @Query("order_by") orderBy: OrderType = OrderType.Latest): Single<List<Photo>> // Deferred<List<Photo>>
+    fun getCuratedPhotos(
+            @Query("page") pageToFetch: Int = 1,
+            @Query("per_page") photosPerPage: Int = 10,
+            @Query("order_by") orderBy: OrderType = OrderType.Latest
+    ) : Single<List<Photo>> // Deferred<List<Photo>>
 
 }
