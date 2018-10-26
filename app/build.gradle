@@ -33,11 +33,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.0-eap13'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-common:0.30.0-eap13'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.30.0-eap13'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactive:0.30.0-eap13'
-
     implementation 'com.android.support.constraint:constraint-layout:2.0.0-alpha2'
 
     implementation 'com.android.support:exifinterface:27.1.1'
@@ -68,13 +63,9 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:2.15"
 
     // Coroutines support
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.24.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-rx2:0.24.0'
-    compile 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.30.0-eap13'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.30.0-eap13'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactive:0.30.0-eap13'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-rx2:0.30.0-eap13'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 }
-
-//kotlin {
-//    experimental {
-//        coroutines 'enable'
-//    }
-//}

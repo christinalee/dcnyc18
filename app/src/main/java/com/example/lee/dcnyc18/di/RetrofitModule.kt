@@ -2,7 +2,7 @@ package com.example.lee.dcnyc18.di
 
 import com.example.lee.dcnyc18.network.HeaderInterceptor
 import com.example.lee.dcnyc18.network.UnsplashService
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
