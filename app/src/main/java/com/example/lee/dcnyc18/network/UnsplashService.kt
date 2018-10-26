@@ -2,7 +2,7 @@ package com.example.lee.dcnyc18.network
 
 import com.example.lee.dcnyc18.models.Photo
 import io.reactivex.Single
-import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Query
 

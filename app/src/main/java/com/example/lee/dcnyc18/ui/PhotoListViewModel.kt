@@ -11,7 +11,7 @@ import com.example.lee.dcnyc18.prefs.PrefsManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class PhotoListViewModel @Inject constructor( private val photoDataSource: PhotoDataSource,
