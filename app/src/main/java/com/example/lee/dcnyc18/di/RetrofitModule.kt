@@ -29,8 +29,7 @@ class RetrofitModule {
                 .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create())
                 // Network 1: Add CoroutineCallAdapterFactory adapter factory
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
     }
 

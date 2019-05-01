@@ -3,22 +3,25 @@ package com.example.lee.dcnyc18.ui
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.os.NetworkOnMainThreadException
 import com.example.lee.dcnyc18.db.PhotoDataSource
 import com.example.lee.dcnyc18.models.DCNYCDispatchers
 import com.example.lee.dcnyc18.models.Photo
 import com.example.lee.dcnyc18.network.UnsplashService
 import com.example.lee.dcnyc18.prefs.PrefsManager
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class PhotoListViewModel @Inject constructor( private val photoDataSource: PhotoDataSource,
         private val unsplashService: UnsplashService,
         private val prefsManager: PrefsManager,
         private val dispatchers: DCNYCDispatchers
-): ViewModel(), ListIntentHandler, PhotoCellIntentHandler {
+): ViewModel(), ListIntentHandler, PhotoCellIntentHandler, CoroutineScope {
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = dispatchers.main + job
 
     // TODO: this is flawed but good enough for a sample app
     private var pageToFetch = prefsManager.retrieveNextApiPage()
@@ -28,9 +31,7 @@ class PhotoListViewModel @Inject constructor( private val photoDataSource: Photo
         }
 
     private lateinit var photos: MutableLiveData<List<Photo>>
-    private val disposables: CompositeDisposable = CompositeDisposable()
     // Network 6. Create a parent job for managing cancellation
-//    private val compositeJob = Job()
 
     fun getPhotosListData(): LiveData<List<Photo>> {
         if (!::photos.isInitialized) {
@@ -42,69 +43,56 @@ class PhotoListViewModel @Inject constructor( private val photoDataSource: Photo
 
     // Network 7. Include cancellation in lifecycle events, then update coroutines with context
     override fun onCleared() {
-        disposables.dispose()
-//        compositeJob.cancel()
+        job.cancel()
         super.onCleared()
     }
 
     // Db 3. Update call sites
     private fun updateModelState(modelId: String, newLikeStatus: Boolean) {
-        val sub = photoDataSource.persistLikeStatus(modelId, newLikeStatus)
-                .subscribe(
-                        {
-                            println("$TAG SUCCESS LEMUR! 🐒 ")
-                        },
-                        { _ ->
-                            println("$TAG FAIL WHALE! 🐳 ")
-                        }
-                )
-        disposables.add(sub)
+        launch {
+            try {
+                photoDataSource.persistLikeStatus(modelId, newLikeStatus)
+            } catch(e: Exception) {
+               // TODO
+            }
+        }
     }
 
     // Network 4. At call site, use coroutine launcher to be able to utilize our new function
     private fun listenForDataFromDb() {
-        // Streams 3: Handle channel iteration
-        val sub = photoDataSource.getAllPhotos()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { updatedPhotos ->
-                            if (updatedPhotos.isEmpty()) {
-                                // No photos have been persisted, begin fetching from network
-                                fetchNextPageOfPhotos()
-                            } else {
-                                photos.postValue(updatedPhotos)
-                            }
-                        },
-                        {
-                            println("$TAG Error fetching photos from db $it")
-                        }
-                )
-        disposables.add(sub)
+        launch {
+            val channel = photoDataSource.getAllPhotos()
+
+            for (updatedPhotos in channel) {
+                if (updatedPhotos.isEmpty()) {
+                    withContext(dispatchers.io) {
+                        // No photos have been persisted, begin fetching from network
+                        fetchNextPageOfPhotos()
+                    }
+                } else {
+                    withContext(dispatchers.main) {
+                        photos.postValue(updatedPhotos)
+                    }
+                }
+            }
+        }
     }
 
     // Network 3. Handle necessary logic in suspend fun
-    private fun fetchNextPageOfPhotos() {
-        val subscription = unsplashService.getCuratedPhotos(pageToFetch = pageToFetch++)
-                .subscribeOn(Schedulers.io())
-                .flatMapCompletable {
-                    photoDataSource.insertIfNotPresent(it)
-                }
-                .subscribe(
-                        {
-                            println("$TAG Successfully inserted into db")
-                        },
-                        {
-                            // TODO: handle the error
-                            println("$TAG Womp womp $it")
-                        }
-                )
-
-        disposables.add(subscription)
+    private suspend fun fetchNextPageOfPhotos() {
+        try {
+            val curatedPhotos = unsplashService.getCuratedPhotos(pageToFetch++).await()
+            photoDataSource.insertIfNotPresent(curatedPhotos)
+        } catch (e: NetworkOnMainThreadException) {
+            // Handle the exception
+        }
     }
 
     // Network 5. Update remaining call sites
     override fun onReachedEndOfData() {
-        fetchNextPageOfPhotos()
+        launch(dispatchers.io) {
+            fetchNextPageOfPhotos()
+        }
     }
 
     override fun handleHeartIconClicked(photo: Photo) {
